@@ -11,26 +11,38 @@ function PokeDex() {
   const [isHover, setIsHover] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [ordered, setOrdered] = useState("A-Z")
+  const [endpoint, setEndpoint] = useState("")
 
   useEffect(() => {
     setIsLoading(true)
     axios.get('https://pokeapi.co/api/v2/pokemon').then((res) => {
       setTimeout(() => {
         setPokemons(res.data.results)
+        // setEndpoint(res.data.results)
         setIsLoading(false)
       }, 1500)
     })
     
   }, [])
 
+  console.log(pokemonDetail);
+
+  useEffect(() => {
+    if (pokemonDetail != null) {
+      axios.get(pokemonDetail).then((res) => {
+        setEndpoint(res.data)
+      })
+    }
+  }, [pokemonDetail])
+
+  console.log(endpoint);
+  
   // const mouseEnter = () => {
   //   setIsHover(true)
   // }
   // const mouseLeave = () => {
   //   setIsHover(false)
   // }
-
-  console.log(pokemons);
 
   const customStyles = {
     content: {
@@ -124,7 +136,7 @@ function PokeDex() {
               return (
                 <div key={index} 
                   className="mapped-item"
-                  onClick={() => setPokemonDetail(x)}
+                  onClick={() => setPokemonDetail(x.url)}
                 >
                   {x.name}
                 </div>
@@ -135,7 +147,7 @@ function PokeDex() {
       </header>
       {pokemonDetail && (
         <Modal
-          isOpen={pokemonDetail}
+          isOpen={pokemonDetail }
           contentLabel={pokemonDetail?.name || ""}
           onRequestClose={() => {
             setPokemonDetail(null);
@@ -143,6 +155,9 @@ function PokeDex() {
           style={customStyles}
         >
           <div>
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+              <img src={endpoint && endpoint.sprites.front_default} style={{width: '200px'}} />
+            </div>
             Requirement:
             <ul>
               <li>show the sprites front_default as the pokemon image</li>
