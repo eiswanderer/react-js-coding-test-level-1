@@ -8,6 +8,29 @@ function PokeDex() {
   const [pokemons, setPokemons] = useState([]);
   const [pokemonDetail, setPokemonDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHover, setIsHover] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [ordered, setOrdered] = useState("A-Z")
+
+  useEffect(() => {
+    setIsLoading(true)
+    axios.get('https://pokeapi.co/api/v2/pokemon').then((res) => {
+      setTimeout(() => {
+        setPokemons(res.data.results)
+        setIsLoading(false)
+      }, 1500)
+    })
+    
+  }, [])
+
+  // const mouseEnter = () => {
+  //   setIsHover(true)
+  // }
+  // const mouseLeave = () => {
+  //   setIsHover(false)
+  // }
+
+  console.log(pokemons);
 
   const customStyles = {
     content: {
@@ -56,14 +79,57 @@ function PokeDex() {
           <>
             <div className="App">
               <header className="App-header">
-                <b>Implement loader here</b>
+              <ReactLoading />
               </header>
             </div>
           </>
         ) : (
           <>
             <h1>Welcome to pokedex !</h1>
-            <b>Implement Pokedex list here</b>
+            <input 
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search pokemon here"
+              // onKeyUp=
+            />
+            <div className="order-az">
+            <p>Alphabet Order</p>
+            <select
+              value={ordered}
+              onChange={(e) => setOrdered(e.target.value)}
+            >
+              <option>A-Z</option>
+              <option>Z-A</option>
+            </select>
+            </div>
+            {pokemons
+              .filter((val) => {
+                if (searchTerm == "") {
+                  return val;
+                } else if (
+                  val.name.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+                ) {
+                  return val
+                }
+              })
+              .filter((x) => {
+                if (ordered == "A-Z") {
+                  return pokemons.sort((a, b) => a.name > b.name ? 1 : -1)
+                } else if (ordered == "Z-A") {
+                  return pokemons.sort((b, a) => a.name > b.name ? 1 : -1)
+                }
+              })
+              .map((x, index) => {
+              return (
+                <div key={index} 
+                  className="mapped-item"
+                  onClick={() => setPokemonDetail(x)}
+                >
+                  {x.name}
+                </div>
+              )
+            })}
           </>
         )}
       </header>

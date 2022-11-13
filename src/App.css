@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+.order-az {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 2rem;
+}
+ .order-az p {
+  padding-top: 1rem;
+  margin: 0;
+  font-size: 12px;
+ }
