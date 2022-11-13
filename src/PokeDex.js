@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import ReactLoading from "react-loading";
 import axios from "axios";
 import Modal from "react-modal";
+import { CChart } from '@coreui/react-chartjs'
 
 function PokeDex() {
   const [pokemons, setPokemons] = useState([]);
@@ -12,6 +13,8 @@ function PokeDex() {
   const [searchTerm, setSearchTerm] = useState("")
   const [ordered, setOrdered] = useState("A-Z")
   const [endpoint, setEndpoint] = useState("")
+  const [baseName, setBaseName] = useState("")
+  const [baseStats, setBaseStats] = useState("")
 
   useEffect(() => {
     setIsLoading(true)
@@ -31,11 +34,22 @@ function PokeDex() {
     if (pokemonDetail != null) {
       axios.get(pokemonDetail).then((res) => {
         setEndpoint(res.data)
+        
       })
     }
   }, [pokemonDetail])
 
+  useEffect(() => {
+    setBaseName(endpoint && endpoint.stats.map((x) => x.stat.name))
+  }, [endpoint])
+
+  useEffect(() => {
+    setBaseStats(endpoint && endpoint.stats.map((x) => x.base_stat))
+  }, [endpoint])
+
   console.log(endpoint);
+  console.log(baseName);
+  console.log(baseStats)
   
   // const mouseEnter = () => {
   //   setIsHover(true)
@@ -54,6 +68,7 @@ function PokeDex() {
       transform: "translate(-50%, -50%)",
       background: "black",
       color: "white",
+      width: "30rem",
     },
     overlay: { backgroundColor: "grey" },
   };
@@ -158,8 +173,41 @@ function PokeDex() {
             <div style={{display: 'flex', justifyContent: 'center'}}>
               <img src={endpoint && endpoint.sprites.front_default} style={{width: '200px'}} />
             </div>
-            Requirement:
-            <ul>
+            <div>
+              <table style={{borderSpacing: '1px'}}>
+                <thead style={{display: 'flex'}}>
+                  <tr style={{paddingRight: '5rem'}}><b>Base</b></tr>
+                  <tr style={{transform: 'translateX(30px)'}}><b>Stats</b></tr>
+                </thead>
+                <tbody>
+                  {endpoint && endpoint.stats.map((x, index) => {
+                    return (
+                      <tr>
+                        <td>{x.stat.name}</td>
+                        <td>{x.base_stat}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <CChart 
+                type="bar"
+                data={{
+                  labels: [...baseName],
+                  datasets: [
+                    {
+                      label: 'stats',
+                      backgroundColor: '#f87979',
+                      data: [...baseStats],
+                    },
+                  ],
+                }}
+              />
+            </div>
+            {/* Requirement: */}
+            {/* <ul>
               <li>show the sprites front_default as the pokemon image</li>
               <li>
                 Show the stats details - only stat.name and base_stat is
@@ -167,7 +215,7 @@ function PokeDex() {
               </li>
               <li>Create a bar chart based on the stats above</li>
               <li>Create a  buttton to download the information generated in this modal as pdf. (images and chart must be included)</li>
-            </ul>
+            </ul> */}
           </div>
         </Modal>
       )}
