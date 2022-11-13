@@ -1,9 +1,12 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactLoading from "react-loading";
 import axios from "axios";
 import Modal from "react-modal";
 import { CChart } from '@coreui/react-chartjs'
+import Pdf from "react-to-pdf";
+
+const ref = React.createRef();
 
 function PokeDex() {
   const [pokemons, setPokemons] = useState([]);
@@ -28,7 +31,7 @@ function PokeDex() {
     
   }, [])
 
-  console.log(pokemonDetail);
+  // console.log(pokemonDetail);
 
   useEffect(() => {
     if (pokemonDetail != null) {
@@ -47,9 +50,25 @@ function PokeDex() {
     setBaseStats(endpoint && endpoint.stats.map((x) => x.base_stat))
   }, [endpoint])
 
-  console.log(endpoint);
-  console.log(baseName);
-  console.log(baseStats)
+
+  // const pdfRef = useRef(null)
+
+  // const downloadPDF = () => {
+  //   const content = pdfRef.current
+
+  //   const doc = new jsPDF();
+  //   doc.html(content, {
+  //     callback: function (doc) {
+  //       doc.save('pokemon.pdf')
+  //     },
+  //     x: 10,
+  //     y: 10,
+  //   })
+  // }
+
+  // console.log(endpoint);
+  // console.log(baseName);
+  // console.log(baseStats)
   
   // const mouseEnter = () => {
   //   setIsHover(true)
@@ -68,7 +87,7 @@ function PokeDex() {
       transform: "translate(-50%, -50%)",
       background: "black",
       color: "white",
-      width: "30rem",
+      width: "23rem",
     },
     overlay: { backgroundColor: "grey" },
   };
@@ -170,42 +189,44 @@ function PokeDex() {
           style={customStyles}
         >
           <div>
-            <div style={{display: 'flex', justifyContent: 'center'}}>
-              <img src={endpoint && endpoint.sprites.front_default} style={{width: '200px'}} />
-            </div>
-            <div>
-              <table style={{borderSpacing: '1px'}}>
-                <thead style={{display: 'flex'}}>
-                  <tr style={{paddingRight: '5rem'}}><b>Base</b></tr>
-                  <tr style={{transform: 'translateX(30px)'}}><b>Stats</b></tr>
-                </thead>
-                <tbody>
-                  {endpoint && endpoint.stats.map((x, index) => {
-                    return (
-                      <tr>
-                        <td>{x.stat.name}</td>
-                        <td>{x.base_stat}</td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-            <div>
-              <CChart 
-                type="bar"
-                data={{
-                  labels: [...baseName],
-                  datasets: [
-                    {
-                      label: 'stats',
-                      backgroundColor: '#f87979',
-                      data: [...baseStats],
-                    },
-                  ],
-                }}
-              />
-            </div>
+            <div ref={ref}>
+              <div style={{display: 'flex', justifyContent: 'center'}}>
+                <img src={endpoint && endpoint.sprites.front_default} style={{width: '200px'}} />
+              </div>
+              <div>
+                <table style={{borderSpacing: '1px'}}>
+                  <thead style={{display: 'flex'}}>
+                    <tr style={{paddingRight: '5rem'}}><b>Base</b></tr>
+                    <tr style={{transform: 'translateX(30px)'}}><b>Stats</b></tr>
+                  </thead>
+                  <tbody>
+                    {endpoint && endpoint.stats.map((x, index) => {
+                      return (
+                        <tr>
+                          <td>{x.stat.name}</td>
+                          <td>{x.base_stat}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <CChart 
+                  type="bar"
+                  data={{
+                    labels: [...baseName],
+                    datasets: [
+                      {
+                        label: 'stats',
+                        backgroundColor: '#f87979',
+                        data: [...baseStats],
+                      },
+                    ],
+                  }}
+                />
+              </div>
+              
             {/* Requirement: */}
             {/* <ul>
               <li>show the sprites front_default as the pokemon image</li>
@@ -216,6 +237,10 @@ function PokeDex() {
               <li>Create a bar chart based on the stats above</li>
               <li>Create a  buttton to download the information generated in this modal as pdf. (images and chart must be included)</li>
             </ul> */}
+            </div>
+            <Pdf targetRef={ref} filename="pokemon.pdf">
+              {({ toPdf }) => <button onClick={toPdf}>Generate PDF</button>}
+            </Pdf>
           </div>
         </Modal>
       )}
