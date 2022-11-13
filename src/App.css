@@ -51,3 +51,6 @@
  .mapped-item {
   cursor: pointer;
  }
+ .mapped-item:hover {
+ color: yellow;
+ }

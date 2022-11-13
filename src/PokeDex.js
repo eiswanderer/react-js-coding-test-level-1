@@ -12,7 +12,6 @@ function PokeDex() {
   const [pokemons, setPokemons] = useState([]);
   const [pokemonDetail, setPokemonDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isHover, setIsHover] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [ordered, setOrdered] = useState("A-Z")
   const [endpoint, setEndpoint] = useState("")
@@ -31,13 +30,10 @@ function PokeDex() {
     
   }, [])
 
-  // console.log(pokemonDetail);
-
   useEffect(() => {
     if (pokemonDetail != null) {
       axios.get(pokemonDetail).then((res) => {
         setEndpoint(res.data)
-        
       })
     }
   }, [pokemonDetail])
@@ -49,33 +45,6 @@ function PokeDex() {
   useEffect(() => {
     setBaseStats(endpoint && endpoint.stats.map((x) => x.base_stat))
   }, [endpoint])
-
-
-  // const pdfRef = useRef(null)
-
-  // const downloadPDF = () => {
-  //   const content = pdfRef.current
-
-  //   const doc = new jsPDF();
-  //   doc.html(content, {
-  //     callback: function (doc) {
-  //       doc.save('pokemon.pdf')
-  //     },
-  //     x: 10,
-  //     y: 10,
-  //   })
-  // }
-
-  // console.log(endpoint);
-  // console.log(baseName);
-  // console.log(baseStats)
-  
-  // const mouseEnter = () => {
-  //   setIsHover(true)
-  // }
-  // const mouseLeave = () => {
-  //   setIsHover(false)
-  // }
 
   const customStyles = {
     content: {
